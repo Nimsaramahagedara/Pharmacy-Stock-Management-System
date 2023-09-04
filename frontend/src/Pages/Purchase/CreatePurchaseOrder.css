@@ -1,0 +1,18 @@
+.insertForm{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    align-items: center;
+}
+
+.CreatePurchaseInputs{
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+input::placeholder, .ant-select-selection-placeholder {
+    color: rgb(100, 100, 100)!important;
+    font-weight: 100;
+}
