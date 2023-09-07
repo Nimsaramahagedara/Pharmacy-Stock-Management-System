@@ -1,8 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StockTable from '../../components/StockTable';
 import CreateSKUModel from '../../components/CreateSKUModel';
-
 import {
   Button,
   DatePicker,
@@ -13,8 +12,14 @@ import {
   Upload,
   Typography,
   Row,
-  Col
+  Col,
+  message
 } from 'antd';
+import axios, { all } from 'axios';
+import authAxios from '../../utils/authAxios';
+
+//import { createAuthAxios } from '../../utils/CreateAuthAxios';
+
 
 
 
@@ -29,6 +34,55 @@ const normFile = (e) => {
 
 
 const AddStock = () => {
+  const [allSku, setAllSku] = useState([0]);
+
+  const [supplierId, setSupplierId] = useState('');
+  const [packingId, setPackingId] = useState('');
+  const [sku , setSku] = useState('');
+  const [noOfBoxes , setNoOfBoxes] = useState('');
+  const [noOfUnits, setNoOfUnits] = useState('');
+  const [MFD , setMfd] = useState('');
+  const [EXP , setExp] = useState('');
+  const [batchNo , setBatchNo] = useState('')
+  const [purchaseDate, setPurchaseDate] = useState('');
+
+  const getAllSku = async () => {
+      try {
+       const result =  await authAxios.get(`/stock/getallsku`);
+       setAllSku(result.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    useEffect(() => {
+      // Call the getAllSku function when the component mounts
+      getAllSku();
+      console.log(allSku);
+    }, []);
+
+  const handleSubmit =async ()=>{
+    
+  const data = {
+    purchaseId: '',
+    supplierId: supplierId,
+    packingId: packingId,
+    skuNumber: sku,
+    boxes: noOfBoxes,
+    noOfUnits: noOfUnits,
+    dom: MFD,
+    doe: EXP,
+    batchNumber: batchNo,
+    dateOfPurchase: purchaseDate,
+    status: 1
+  };
+    console.log(data);
+    const result = await authAxios.post('/stock/create',data);
+    if(result){
+      message.success('Product Added successfully ! ')
+    }
+    console.log(result);
+  }
 
   return (
     <>
@@ -36,6 +90,8 @@ const AddStock = () => {
         <Title level={3} className='text-center'>Add Stock</Title>
         <Form.Item>
           <Select
+          onChange={e=>setSupplierId(e.target.value)}
+            name ='supplierId'      
             showSearch
             placeholder="Supplier ID"
             optionFilterProp="children"
@@ -46,27 +102,27 @@ const AddStock = () => {
             options={[
               {
                 value: '1',
-                label: 'Not Identified',
+                label: 'Supplier 01',
               },
               {
                 value: '2',
-                label: 'Closed',
+                label: 'Supplier 02',
               },
               {
                 value: '3',
-                label: 'Communicated',
+                label: 'Supplier 03',
               },
               {
                 value: '4',
-                label: 'Identified',
+                label: 'Supplier 04',
               },
               {
                 value: '5',
-                label: 'Resolved',
+                label: 'Supplier 05',
               },
               {
                 value: '6',
-                label: 'Cancelled',
+                label: 'Supplier 06',
               },
             ]}
           />
@@ -75,45 +131,26 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <Input placeholder='Packing Slip Id' />
+              <Input placeholder='Packing Slip Id'  name='packingId'/>
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
               <Select
+              name = 'sku'
+              
                 showSearch
                 placeholder="SKU Number"
                 optionFilterProp="children"
+                dropdownClassName="scrollable-dropdown"
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
+                options = {allSku.map((result) => ({
+                  value: result._id,
+                  label: result.sku,
+                }))}
               />
             </Form.Item>
           </Col>
@@ -122,12 +159,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber placeholder='Number Of Boxes' style={{ width: '100%' }} />
+              <InputNumber name='noOfBoxes'  placeholder='Number Of Boxes' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item >
-              <InputNumber placeholder='Number Of Units' style={{ width: '100%' }} />
+              <InputNumber name='noOfUnits'  placeholder='Number Of Units' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
@@ -135,12 +172,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <DatePicker style={{ width: '100%' }} placeholder='Manufactured Date' />
+              <DatePicker name='MFD'  style={{ width: '100%' }} placeholder='Manufactured Date' />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker placeholder='Expiry Date' style={{ width: '100%' }} />
+              <DatePicker name='EXP'  placeholder='Expiry Date' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
@@ -148,12 +185,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber placeholder='Batch Number' style={{ width: '100%' }} />
+              <InputNumber name='batchNo'  placeholder='Batch Number' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker placeholder='Purchase Date' style={{ width: '100%' }} />
+              <DatePicker name='purchaseDate'  placeholder='Purchase Date' style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
@@ -173,7 +210,7 @@ const AddStock = () => {
           </Upload>
         </Form.Item>
         <div className="d-flex w-100 justify-content-between">
-          <Button type="primary" htmlType="submit" className='mb-0'>Add To The Stock </Button>
+          <Button type="primary" htmlType="submit" className='mb-0' onClick={handleSubmit}>Add To The Stock </Button>
           <CreateSKUModel/>
         </div>
       </div>

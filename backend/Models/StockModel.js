@@ -32,6 +32,13 @@ const stockSchema = new mongoose.Schema({
     dateOfPurchase:{
         type:Date
     },
+    packingId:{
+        type: String,
+
+    },
+    supplierId:{
+        type: String,
+    },
     status:{
         type: Boolean,
         default: 1

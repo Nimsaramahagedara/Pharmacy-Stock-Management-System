@@ -1,87 +1,116 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { MDBDataTable } from "mdbreact";
-import {Button } from 'antd';
+import StockCountBox from '../../components/StockCountBox';
+//import { createAuthAxios } from '../../utils/CreateAuthAxios';
+import { useLocation } from 'react-router-dom';
+import authAxios from '../../utils/authAxios';
+
+
 
 const AllStock = () => {
+  const [tableContent , setTableContent] = useState([])
+  const [varients , setVarients] = useState(0);
+  const [outOfStock , setOutOfStock]= useState(0);
+  const [expiredItem , setExpiredItem] = useState(0);
+  const [damagedItem, setDamaged] = useState(0);
+  const location = useLocation();
 
-  const [tableData, setTableData] = useState();
+  //Create an instance from createAuthAxios
+
+  const getAllStock =async () => {
+
+    try {
+      const all = await authAxios.get(`/stock`)
+      setTableContent(all.data);  
+      setVarients(all.data.length);
+      console.log('Table data in Function : ');
+      console.log( all.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+      getAllStock();
+  }, []);
+
 
   const columnData = [
     {
       label: "Purchase ID",
-      field: "id",
+      field: "purchaseId",
       sort: "asc",
       width: 250,
     },
     {
       label: "Packing Slip ID",
-      field: "id",
+      field: "packingid",
       sort: "asc",
       width: 250,
     },
     {
       label: "SKU number",
-      field: "email",
+      field: "skuNumber",
       sort: "asc",
       width: 150,
     },
     {
       label: "Item Name",
-      field: "touristEmail",
+      field: "itemName",
       sort: "asc",
       width: 200,
     },
     {
       label: "Category",
-      field: "touristEmail",
+      field: "category",
       sort: "asc",
       width: 200,
     },
     {
       label: "Location",
-      field: "touristEmail",
+      field: "location",
       sort: "asc",
       width: 200,
     },
     {
       label: "No. of boxes",
-      field: "contact",
+      field: "boxes",
       sort: "asc",
       width: 130,
     },
     {
       label: "No. of Units",
-      field: "tourDestination",
+      field: "noOfUnits",
       sort: "asc",
       width: 130,
     },
     {
       label: "Manufacture",
-      field: "pickupDestination",
+      field: "dom",
       sort: "asc",
       width: 100,
     },
     {
       label: "Expiry",
-      field: "from",
+      field: "doe",
       sort: "asc",
       width: 100,
     },
     {
       label: "Supplier ID",
       field: "to",
-      sort: "asc",
+      sort: "supplierId",
       width: 130,
     },
     {
       label: "Batch Number",
-      field: "time",
+      field: "batchNumber",
       sort: "asc",
       width: 150,
     },
     {
       label: "Purchase Date",
-      field: "status",
+      field: "purchaseDate",
       sort: "asc",
       width: 150,
     },
@@ -93,17 +122,17 @@ const AllStock = () => {
     },
   ];
 
-  useEffect(()=>{
-    setTableData({
-      columns: columnData,
-    });
-  },[])
-
 
   return (
     <div className="allBookings">
+      <div className='d-flex justify-content-around mb-3'>
+        <StockCountBox count={varients} title={'Varients'} />
+        <StockCountBox count={outOfStock} title={'Out Of Stock'} />
+        <StockCountBox count={expiredItem} title={'Expired Items'} />
+        <StockCountBox count={damagedItem} title={'Damaged Items'} />
+      </div>
       <h3>All Stocks</h3>
-      <MDBDataTable scrollX striped bordered data={tableData} maxHeight="200px"/>
+      <MDBDataTable scrollX striped bordered data={{ columns: columnData, rows: tableContent }} maxHeight="200px" />
     </div>
   );
 }

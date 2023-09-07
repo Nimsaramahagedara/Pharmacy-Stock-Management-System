@@ -1,20 +1,40 @@
 import React, { useState } from 'react';
-import {Form,Input, Button, Modal } from 'antd';
+import { Form, Input, Button, Modal, message } from 'antd';
+import axios from 'axios';
+import authAxios from '../utils/authAxios';
 
 
+
+//`stock/createsku`
 const CreateSKUModel = () => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [sku, setSku] = useState('');
+  const [name, setName] = useState('');
+  const baseUrl = process.env.REACT_APP_BASE_URL
 
-    const showModal = () => {
+
+  const showModal = () => {
     setOpen(true);
   };
-  const handleOk = () => {
+  const handleOk = async () => {
     setConfirmLoading(true);
-    setTimeout(() => {
-      setOpen(false);
-      setConfirmLoading(false);
-    }, 2000);
+    const data = {
+      sku: sku,
+      name: name
+    }
+    try {
+      const result = await authAxios.post(`/stock/createsku`, data)
+      if (result) {
+        setConfirmLoading(false)
+        message.success('New SKU Created !!')
+      }
+
+    } catch (error) {
+      message.error(error.response.data.error);
+    }
+    setConfirmLoading(false)
+    setOpen(false);
   };
   const handleCancel = () => {
     console.log('Clicked cancel button');
@@ -33,12 +53,12 @@ const CreateSKUModel = () => {
         onCancel={handleCancel}
       >
         <div>
-        <Form.Item>
-              <Input placeholder='SKU Number' />
-        </Form.Item>
-        <Form.Item>
-              <Input placeholder='Product Name' />
-        </Form.Item>
+          <Form.Item>
+            <Input placeholder='SKU Number' onChange={e => setSku(e.target.value)} value={sku} />
+          </Form.Item>
+          <Form.Item>
+            <Input placeholder='Product Name' onChange={e => setName(e.target.value)} value={name} />
+          </Form.Item>
         </div>
       </Modal>
     </>

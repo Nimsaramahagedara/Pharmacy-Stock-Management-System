@@ -2,27 +2,47 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Layout, Typography, message } from 'antd';
 import logo from '../../images/logo.svg';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+
+export const logout = () => {
+  // Remove the 'token' cookie
+  Cookies.remove('token');
+
+  // Perform any other logout-related actions (e.g., redirecting to the login page)
+  window.location.href = '/login';
+};
 
 const Login = () => {
   const navigate = useNavigate();
+  const baseUrl = process.env.REACT_APP_BASE_URL
 
-  const onFinish =  async (values) => {
 
-  try {
-    const a =  await axios.post('http://localhost:10000/admin/',values)
+  const onFinish = async (values) => {
 
-    if (a.status === 200) {
-      navigate('/');
-    } else {
-      // Handle unexpected response status codes here
-      message.error('Unexpected Response');
+    try {
+      const a = await axios.post(`${baseUrl}/admin/`, values)
+
+      if (a.status === 200) {
+        const token = a.data.token
+        Cookies.set('token', token, { expires: 1 })
+
+         if (Cookies.get('token')) {
+          navigate('/')
+         } else {
+           console.log(token + 'There is no token in cookies');
+         }
+
+      } else {
+        // Handle unexpected response status codes here
+        message.error('Unexpected Response');
+      }
+
+    } catch (error) {
+      message.error('Error: ' + error.response.data.error)
     }
-    
-  } catch (error) {
-    message.error('Error: ' + error.response.data.error) 
-  }
 
   };
   const { Content } = Layout;
@@ -31,8 +51,8 @@ const Login = () => {
     <Layout>
       <Content style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <div className="login-form-container bg-white p-5 shadow rounded">
-          <div className="text-center" style={{height:'100px'}}>
-            <img src={logo} alt="logo" className='h-100 w-100 object-fit-cover' style={{objectFit:'cover'}}/>
+          <div className="text-center" style={{ height: '100px' }}>
+            <img src={logo} alt="logo" className='h-100 w-100 object-fit-cover' style={{ objectFit: 'cover' }} />
           </div>
           {/* <Title level={4} className='text-center mb-3'>Login</Title> */}
           <Form
@@ -82,7 +102,7 @@ const Login = () => {
             <Form.Item>
               <Button type="primary" htmlType="submit" className="login-form-button mb-1" block>
                 Log in
-              </Button> <br/>
+              </Button> <br />
               Or <a href="">register now!</a>
             </Form.Item>
           </Form>

@@ -18,39 +18,52 @@ import CreatePurchaseOrder from './Pages/Purchase/CreatePurchaseOrder'
 import Login from './Pages/Login/Login'
 import PreLoader from './components/Preloader'
 import NotFound from './Pages/ErrorPages/NotFound'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 
 
 const App = () => {
+ // const [isLoggedIn, setLoggin] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate an async operation (e.g., fetching data) with a delay
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // Simulating 2 seconds delay
-  }, []);
+  // // Simulate an async operation (e.g., fetching data) with a delay
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 1500); // Simulating 2 seconds delay
+  // }, []);
 
-  if (isLoading) {
-    return <PreLoader />; // Render the preloader while loading
-  }
-
+  // if (isLoading) {
+  //   return <PreLoader />; // Render the preloader while loading
+  // }
+  // if (Cookies.get('token')) {
+  //   setLoggin(true);
+  // }
+  // if (!isLoggedIn) {
+  //   return (
+  //     <Routes>
+  //       <Route path='*' element={<Login />} />
+  //       <Route path='login' element={<Login />} />
+  //     </Routes>
+  //   )
+  // }
   return (
     <Routes>
       <Route path='*' element={<NotFound />} />
       <Route path='login' element={<Login />} />
-      <Route path='/' element={<DashboardLayout/>}>
+      <Route path='/' element={<DashboardLayout />}>
         <Route path='' index element={<AllStock />} />
         <Route path='addStock' element={<AddStock />} />
         <Route path='purchaseOrder' element={<CreatePurchaseOrder />} />
         <Route path='purchaseReturn' element={<PurchaseReturns />} />
         <Route path='dnotes' element={<DNotes />} />
-        <Route path='invoice' element={<Invoice/>} />
+        <Route path='invoice' element={<Invoice />} />
         <Route path='order' element={<Order />} />
         <Route path='rcdnotes' element={<RcdNotes />} />
         <Route path='packingslip' element={<Slip />} />
-        <Route path='dmgpurchase' element={<DmgPurchase />} />
+        <Route path='purchase' element={<DmgPurchase />} />
         <Route path='dmgretsales' element={<DmgSales />} />
         <Route path='retsales' element={<RetSales />} />
         <Route path='sales' element={<Sales />} />

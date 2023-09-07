@@ -1,3 +1,4 @@
+import SKU from "../Models/SKU.js";
 import Stock from "../Models/StockModel.js"
 
 
@@ -69,4 +70,27 @@ export const updateStock =async (req, res)=>{
         res.status(500).json({error:error.message});
     }
     
+}
+
+//CREATE SKU
+export const createSku =async (req, res)=>{
+    try {
+        const sku = req.body;
+        await SKU.create(sku).then((savedSKU)=>res.status(200).json(savedSKU) ).catch((error)=>{res.status(500).json({error:'Duplicate SKU'});})
+        //res.status(200).json(newSku);
+    } catch (error) {
+        res.status(500).json({error:error.message});
+    }
+    
+}
+//GET ALL SKU
+
+export const getAllSku = async(req,res)=>{
+    try {
+        const allStock = await SKU.find();
+        res.status(200).json(allStock)
+        
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
 }

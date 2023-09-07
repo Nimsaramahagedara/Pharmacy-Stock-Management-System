@@ -47,6 +47,7 @@ export const loginAdmin = async(req,res)=>{
             throw Error('*Password is incorrect!')
         }else{
             const token = createToken(admin._id)
+           // res.cookie('token', token, { httpOnly: true, maxAge: 3600000 * 24 * 30 });
             res.status(200).json({admin,token})
         }
     }catch(error){
@@ -73,3 +74,8 @@ export const updateAdmin = async(req,res)=>{
         res.status(500).json({error:error.message})
     }
 }
+
+
+// LogOut Admin
+
+

@@ -10,8 +10,8 @@ import logo from '../images/logo.svg';
 import { ConfigProvider, theme, Card } from "antd";
 import { BulbOutlined, StarOutlined } from '@ant-design/icons';
 import { Switch, Space } from 'antd';
-
-
+import { logout } from '../Pages/Login/Login';
+// import { setAuthToken } from '../Pages/Login/Login';
 
 const { Header, Content, Sider } = Layout;
 
@@ -137,6 +137,11 @@ const DashboardLayout = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   setAuthToken(token)
+  // }, [])
 
   const handleTheme = () => {
     setIsDarkMode((previousValue) => !previousValue);
@@ -184,6 +189,7 @@ const DashboardLayout = () => {
                 height: '100%',
               }}
             />
+            <Button onClick={logout}>LogOut</Button>
             {/*THEME SWITCH BUTTON*/}
             <Space direction="vertical" style={{position:'absolute', right:'3%'}}>
               <Switch onClick={handleTheme}
@@ -209,7 +215,7 @@ const DashboardLayout = () => {
 
           <Content
             style={{
-              padding: 24,
+              padding: '0px 24px',
               margin: '0px 16px',
               minHeight: '73.9vh',
             }}

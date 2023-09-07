@@ -40,6 +40,11 @@
   display: none; /* Hide scrollbar buttons */
 }
 
+ .ant-select-dropdown {
+  max-height: 100px; /* Set your desired fixed height here */
+  overflow-y: auto;
+}
+
 
 
 
