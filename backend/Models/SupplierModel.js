@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 
 const supplierSchema = new mongoose.Schema({
-    name:{
+    Id:{
+        type: String,
+        required: true
+    },
+    supplierName:{
         type: String,
         required: true
     },
@@ -16,13 +20,6 @@ const supplierSchema = new mongoose.Schema({
     email:{
         type: String
     },
-    typesOfDrugs:{
-        type: Array
-    },
-    status:{
-        type: Boolean,
-        default: 1
-    }
 },
 {
     timestamps: true

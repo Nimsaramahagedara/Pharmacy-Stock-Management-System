@@ -1,11 +1,32 @@
 import Supplier from "../Models/SupplierModel.js"
+import { generateUniqueId } from "../Utils/generateID.js";
 
+//FETCH LAST DOCUMENT
+const fetchLastDocument = async ()=>{
+    try {
+        // Find the last documents
+        const lastDocument = await Supplier.find()
+          .sort({ createdAt: -1 }) // Sort in descending order based on createdAt field
+          .limit(1);
+    
+        if (lastDocument) {
+          // You can access the last document's data here
+          return lastDocument
 
+        } else {
+          console.log('No document found with the specified purchaseId.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+}
 //CREATE Supplier
 export const createSupplier =async (req, res)=>{
     try {
-        const supplier = req.body;
-        const newSupplier = await Supplier.create(supplier);
+        const lastDoc =await fetchLastDocument();
+        req.body.Id = await generateUniqueId('SUP',lastDoc);
+
+        const newSupplier = await Supplier.create(req.body);
         res.status(200).json(newSupplier);
     } catch (error) {
         res.status(500).json({error:error.message});

@@ -3,7 +3,7 @@ import { MDBDataTable } from "mdbreact";
 import Typography from 'antd/es/typography/Typography';
 
 
-const StockTable = () => {
+const StockTable = ({tableContent}) => {
     const [tableData, setTableData] = useState();
     const { Title } = Typography;
 
@@ -94,16 +94,11 @@ const StockTable = () => {
     },
   ];
 
-  useEffect(()=>{
-    setTableData({
-      columns: columnData,
-    });
-  },[])
 
   return (
     <div className='mt-4'>
         <Title level={5}>Recently Added</Title>
-       <MDBDataTable scrollX striped bordered data={tableData} maxHeight="200px"/> 
+       <MDBDataTable scrollX striped bordered data={{ columns: columnData, rows: tableContent }} maxHeight="200px"/> 
     </div>
     
   )

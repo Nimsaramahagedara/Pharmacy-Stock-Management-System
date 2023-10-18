@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-
 export const logout = () => {
   // Remove the 'token' cookie
   Cookies.remove('token');
@@ -17,7 +16,8 @@ export const logout = () => {
 
 const Login = () => {
   const navigate = useNavigate();
-  const baseUrl = process.env.REACT_APP_BASE_URL
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const { Content } = Layout;
 
 
   const onFinish = async (values) => {
@@ -29,11 +29,11 @@ const Login = () => {
         const token = a.data.token
         Cookies.set('token', token, { expires: 1 })
 
-         if (Cookies.get('token')) {
+        if (Cookies.get('token')) {
           navigate('/')
-         } else {
-           console.log(token + 'There is no token in cookies');
-         }
+        } else {
+          console.log(token + 'There is no token in cookies');
+        }
 
       } else {
         // Handle unexpected response status codes here
@@ -41,11 +41,19 @@ const Login = () => {
       }
 
     } catch (error) {
-      message.error('Error: ' + error.response.data.error)
-    }
+      if (error.response) {
+        // Handle errors with a response from the server
+        message.error('Error: ' + error.response.data.error);
+      } else if (error.request) {
+        // Handle network errors (no response received)
+        message.error('Network error: Unable to reach the server.');
+      } else {
+        // Handle other errors
+        message.error('An error occurred: ' + error.message);
+      }    }
 
   };
-  const { Content } = Layout;
+
 
   return (
     <Layout>

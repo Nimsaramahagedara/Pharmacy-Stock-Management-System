@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { MDBDataTable } from "mdbreact";
 import StockCountBox from '../../components/StockCountBox';
-//import { createAuthAxios } from '../../utils/CreateAuthAxios';
 import { useLocation } from 'react-router-dom';
 import authAxios from '../../utils/authAxios';
 
@@ -66,12 +65,12 @@ const AllStock = () => {
       sort: "asc",
       width: 200,
     },
-    {
-      label: "Location",
-      field: "location",
-      sort: "asc",
-      width: 200,
-    },
+    // {
+    //   label: "Location",
+    //   field: "location",
+    //   sort: "asc",
+    //   width: 200,
+    // },
     {
       label: "No. of boxes",
       field: "boxes",
@@ -110,7 +109,7 @@ const AllStock = () => {
     },
     {
       label: "Purchase Date",
-      field: "purchaseDate",
+      field: "dateOfPurchase",
       sort: "asc",
       width: 150,
     },

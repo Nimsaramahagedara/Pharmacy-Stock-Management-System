@@ -15,13 +15,9 @@ import {
   Col,
   message
 } from 'antd';
-import axios, { all } from 'axios';
 import authAxios from '../../utils/authAxios';
-
-//import { createAuthAxios } from '../../utils/CreateAuthAxios';
-
-
-
+import CreateSupplier from '../../components/CreateSupplier';
+import axios from 'axios';
 
 const { Title } = Typography;
 
@@ -35,54 +31,93 @@ const normFile = (e) => {
 
 const AddStock = () => {
   const [allSku, setAllSku] = useState([0]);
+  const [allSuppliers, setAllSuppliers] = useState([0]);
 
-  const [supplierId, setSupplierId] = useState('');
+  const [supplierId, setSupplierId] = useState(null);
   const [packingId, setPackingId] = useState('');
-  const [sku , setSku] = useState('');
-  const [noOfBoxes , setNoOfBoxes] = useState('');
+  const [sku, setSku] = useState(null);
+  const [noOfBoxes, setNoOfBoxes] = useState('');
   const [noOfUnits, setNoOfUnits] = useState('');
-  const [MFD , setMfd] = useState('');
-  const [EXP , setExp] = useState('');
-  const [batchNo , setBatchNo] = useState('')
+  const [MFD, setMfd] = useState('');
+  const [EXP, setExp] = useState('');
+  const [batchNo, setBatchNo] = useState('')
   const [purchaseDate, setPurchaseDate] = useState('');
 
-  const getAllSku = async () => {
-      try {
-       const result =  await authAxios.get(`/stock/getallsku`);
-       setAllSku(result.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    useEffect(() => {
-      // Call the getAllSku function when the component mounts
-      getAllSku();
-      console.log(allSku);
-    }, []);
+  const [tableContent, setTableContent] = useState([]);
 
-  const handleSubmit =async ()=>{
-    
-  const data = {
-    purchaseId: '',
-    supplierId: supplierId,
-    packingId: packingId,
-    skuNumber: sku,
-    boxes: noOfBoxes,
-    noOfUnits: noOfUnits,
-    dom: MFD,
-    doe: EXP,
-    batchNumber: batchNo,
-    dateOfPurchase: purchaseDate,
-    status: 1
-  };
-    console.log(data);
-    const result = await authAxios.post('/stock/create',data);
-    if(result){
-      message.success('Product Added successfully ! ')
+  const getAllSku = async () => {
+    try {
+      const result = await authAxios.get(`/stock/getallsku`);
+      setAllSku(result.data);
+    } catch (error) {
+      console.log(error);
     }
-    console.log(result);
+  };
+  const getAllSupplier = async () => {
+    try {
+      const result = await axios.get(`http://localhost:10000/supplier/`);
+      console.log(result);
+      setAllSuppliers(result.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    // Call the getAllSku function when the component mounts
+    getAllSku();
+    getAllSupplier()
+    console.log(allSku);
+  }, []);
+
+   // Function to format the date using the Date object
+   const formatDate = (date) => {
+    if (date instanceof Date) {
+      // Format the date as desired (e.g., YYYY-MM-DD)
+      const formattedDate = date.toISOString().split('T')[0];
+      return formattedDate;
+    }
+    return '';
+  };
+  const handleSubmit = async () => {
+
+    const data = {
+      Id: '',
+      supplierId: supplierId,
+      packingId: packingId,
+      skuNumber: sku,
+      boxes: noOfBoxes,
+      noOfUnits: noOfUnits,
+      dom: formatDate(MFD.$d),
+      doe: formatDate(EXP.$d),
+      batchNumber: batchNo,
+      dateOfPurchase: formatDate(purchaseDate.$d),
+      status: 1
+    };
+    console.log(data);
+    setTableContent((prev) => [...prev, data]);
+    console.log(tableContent);
+
+    try {
+      const result = await authAxios.post('/stock/create', data);
+      if (result) {
+        message.success('Product Added successfully ! ')
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle errors with a response from the server
+        message.error('Error: ' + error.response.data.error);
+      } else if (error.request) {
+        // Handle network errors (no response received)
+        message.error('Network error: Unable to reach the server.');
+      } else {
+        // Handle other errors
+        message.error('An error occurred: ' + error.message);
+      }
+    }
   }
+
+  
 
   return (
     <>
@@ -90,55 +125,40 @@ const AddStock = () => {
         <Title level={3} className='text-center'>Add Stock</Title>
         <Form.Item>
           <Select
-          onChange={e=>setSupplierId(e.target.value)}
-            name ='supplierId'      
+            // Bind the value prop to the supplierId state variable
+            value={supplierId}
+            // Set the onChange prop to the handleSupplierChange function
+            onChange={setSupplierId}
+            name='supplierId'
             showSearch
             placeholder="Supplier ID"
             optionFilterProp="children"
             filterOption={(input, option) => (option?.label ?? '').includes(input)}
             filterSort={(optionA, optionB) =>
               (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+
             }
-            options={[
-              {
-                value: '1',
-                label: 'Supplier 01',
-              },
-              {
-                value: '2',
-                label: 'Supplier 02',
-              },
-              {
-                value: '3',
-                label: 'Supplier 03',
-              },
-              {
-                value: '4',
-                label: 'Supplier 04',
-              },
-              {
-                value: '5',
-                label: 'Supplier 05',
-              },
-              {
-                value: '6',
-                label: 'Supplier 06',
-              },
-            ]}
+            options={allSuppliers.map((result) => ({
+              value: result._id,
+              label: result.supplierId + ' ' + result.supplierName ,
+            }))}
           />
         </Form.Item>
 
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <Input placeholder='Packing Slip Id'  name='packingId'/>
+              <Input placeholder='Packing Slip Id' name='packingId' onChange={e=>setPackingId(e.target.value)} value={packingId}/>
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
               <Select
-              name = 'sku'
-              
+                name='sku'
+                // Bind the value prop to the supplierId state variable
+                value={sku}
+              // Set the onChange prop to the handleSupplierChange function
+                onChange={setSku}
                 showSearch
                 placeholder="SKU Number"
                 optionFilterProp="children"
@@ -147,9 +167,9 @@ const AddStock = () => {
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options = {allSku.map((result) => ({
+                options={allSku.map((result) => ({
                   value: result._id,
-                  label: result.sku,
+                  label: result.sku + ' ' +result.name,
                 }))}
               />
             </Form.Item>
@@ -159,12 +179,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber name='noOfBoxes'  placeholder='Number Of Boxes' style={{ width: '100%' }} />
+              <InputNumber name='noOfBoxes' placeholder='Number Of Boxes' style={{ width: '100%' }} onChange={setNoOfBoxes} value={noOfBoxes}/>
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item >
-              <InputNumber name='noOfUnits'  placeholder='Number Of Units' style={{ width: '100%' }} />
+              <InputNumber name='noOfUnits' placeholder='Number Of Units' style={{ width: '100%' }} onChange={setNoOfUnits} value={noOfUnits}/>
             </Form.Item>
           </Col>
         </Row>
@@ -172,12 +192,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <DatePicker name='MFD'  style={{ width: '100%' }} placeholder='Manufactured Date' />
+              <DatePicker name='MFD' style={{ width: '100%' }} placeholder='Manufactured Date' onChange={setMfd} value={MFD}/>
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker name='EXP'  placeholder='Expiry Date' style={{ width: '100%' }} />
+              <DatePicker name='EXP' placeholder='Expiry Date' style={{ width: '100%' }} onChange={setExp} value={EXP}/>
             </Form.Item>
           </Col>
         </Row>
@@ -185,12 +205,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber name='batchNo'  placeholder='Batch Number' style={{ width: '100%' }} />
+              <InputNumber name='batchNo' placeholder='Batch Number' style={{ width: '100%' }} onChange={setBatchNo} value={batchNo}/>
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker name='purchaseDate'  placeholder='Purchase Date' style={{ width: '100%' }} />
+              <DatePicker name='purchaseDate' placeholder='Purchase Date' style={{ width: '100%' }} onChange={setPurchaseDate} value={purchaseDate}/>
             </Form.Item>
           </Col>
         </Row>
@@ -210,15 +230,20 @@ const AddStock = () => {
           </Upload>
         </Form.Item>
         <div className="d-flex w-100 justify-content-between">
+          <div className="col-6">
           <Button type="primary" htmlType="submit" className='mb-0' onClick={handleSubmit}>Add To The Stock </Button>
-          <CreateSKUModel/>
+          </div>
+          <div className="col-4">
+          <CreateSKUModel />
+          <CreateSupplier />
+          </div>
         </div>
       </div>
       <hr className='bg-dark' />
-      <StockTable />
-      
+      <StockTable tableContent={tableContent}/>
+
     </>
   );
 };
-const AddStockPage= () => <AddStock />
-export default  AddStockPage;
+const AddStockPage = () => <AddStock />
+export default AddStockPage;
