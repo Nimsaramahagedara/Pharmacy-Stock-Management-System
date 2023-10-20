@@ -6,7 +6,7 @@ import authAxios from '../utils/authAxios';
 
 
 //`stock/createsku`
-const CreateSupplier = () => {
+const CreateSupplier = ({isCompleted}) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [supplierName, setSupplierName] = useState('');
@@ -36,6 +36,7 @@ const CreateSupplier = () => {
       if (result) {
         setConfirmLoading(false)
         message.success('New Supplier Added !!')
+        isCompleted();
       }
 
     } catch (error) {

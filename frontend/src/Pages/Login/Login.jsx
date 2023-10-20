@@ -1,21 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Layout, Typography, message } from 'antd';
 import logo from '../../images/logo.svg';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { userContext } from '../../App';
 
 export const logout = () => {
   // Remove the 'token' cookie
   Cookies.remove('token');
 
   // Perform any other logout-related actions (e.g., redirecting to the login page)
-  window.location.href = '/login';
+  window.location.href = '/';
 };
 
 const Login = () => {
   const navigate = useNavigate();
+  const {user, handleChangeUser} = useContext(userContext);
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { Content } = Layout;
 
@@ -24,13 +26,13 @@ const Login = () => {
 
     try {
       const a = await axios.post(`${baseUrl}/admin/`, values)
-
       if (a.status === 200) {
         const token = a.data.token
+        handleChangeUser(a.data.admin);
         Cookies.set('token', token, { expires: 1 })
 
         if (Cookies.get('token')) {
-          navigate('/')
+          navigate('/dashboard')
         } else {
           console.log(token + 'There is no token in cookies');
         }

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined, AppstoreOutlined, SnippetsOutlined, WarningOutlined, CheckSquareOutlined, BarChartOutlined, UserOutlined, ExclamationCircleOutlined
 } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, Button } from 'antd';
+import { Breadcrumb, Layout, Menu, Button, Typography } from 'antd';
 import { Outlet, Link } from 'react-router-dom';
 import { Footer } from 'antd/es/layout/layout';
 import logo from '../images/logo.svg';
@@ -11,6 +11,7 @@ import { ConfigProvider, theme, Card } from "antd";
 import { BulbOutlined, StarOutlined } from '@ant-design/icons';
 import { Switch, Space } from 'antd';
 import { logout } from '../Pages/Login/Login';
+import { userContext } from '../App';
 // import { setAuthToken } from '../Pages/Login/Login';
 
 const { Header, Content, Sider } = Layout;
@@ -20,7 +21,7 @@ const items = [
     key: 'sub1',
     icon: React.createElement(AppstoreOutlined),
     label: 'All Stock',
-    to: ''
+    to: 'dashboard'
   },
   {
     key: 'sub2',
@@ -30,12 +31,12 @@ const items = [
       {
         key: 11,
         label: 'Add Received Items',
-        to: 'addStock'
+        to: 'dashboard/addStock'
       },
       {
         key: 12,
         label: 'Create Purchase Order',
-        to: 'purchaseOrder'
+        to: 'dashboard/purchaseOrder'
       },
     ]
   },
@@ -43,7 +44,7 @@ const items = [
     key: 'sub3',
     icon: React.createElement(BarChartOutlined),
     label: 'Dispatch Goods',
-    to: 'sales'
+    to: 'dashboard/sales'
   },
   {
     key: 'sub4',
@@ -53,12 +54,12 @@ const items = [
       {
         key: 1,
         label: 'Purchase',
-        to: 'purchaseReturn'
+        to: 'dashboard/purchaseReturn'
       },
       {
         key: 2,
         label: 'Sales',
-        to: 'retsales'
+        to: 'dashboard/retsales'
       },
     ],
   },
@@ -137,11 +138,16 @@ const DashboardLayout = () => {
   const { defaultAlgorithm, darkAlgorithm } = theme;
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const {user} = useContext(userContext);
   
   // useEffect(() => {
   //   const token = localStorage.getItem('token');
   //   setAuthToken(token)
   // }, [])
+
+  useEffect(()=>{
+    console.log(user);
+  },[])
 
   const handleTheme = () => {
     setIsDarkMode((previousValue) => !previousValue);
@@ -189,7 +195,8 @@ const DashboardLayout = () => {
                 height: '100%',
               }}
             />
-            <Button onClick={logout}>LogOut</Button>
+            <Button onClick={logout}>{user.username} LogOut</Button>
+            {/* User Name here */}
             {/*THEME SWITCH BUTTON*/}
             <Space direction="vertical" style={{position:'absolute', right:'3%'}}>
               <Switch onClick={handleTheme}

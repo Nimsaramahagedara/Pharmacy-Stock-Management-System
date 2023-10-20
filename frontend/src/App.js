@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import DashboardLayout from './Layout/DashboardLayout'
 import './App.css'
@@ -22,8 +22,17 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 
 
+export const userContext = createContext();
+
 
 const App = () => {
+  const [user, setUser] = useState({});
+
+
+  const handleChangeUser = (user)=>{
+    setUser(user);
+    console.log(user);
+  }
  // const [isLoggedIn, setLoggin] = useState(false);
 
   // const [isLoading, setIsLoading] = useState(true);
@@ -50,10 +59,11 @@ const App = () => {
   //   )
   // }
   return (
+    <userContext.Provider value={{user, handleChangeUser}}>
     <Routes>
       <Route path='*' element={<NotFound />} />
-      <Route path='login' element={<Login />} />
-      <Route path='/' element={<DashboardLayout />}>
+      <Route path='/' element={<Login />} />
+      <Route path='/dashboard' element={<DashboardLayout />}>
         <Route path='' index element={<AllStock />} />
         <Route path='addStock' element={<AddStock />} />
         <Route path='purchaseOrder' element={<CreatePurchaseOrder />} />
@@ -69,6 +79,7 @@ const App = () => {
         <Route path='sales' element={<Sales />} />
       </Route>
     </Routes>
+    </userContext.Provider>
   )
 }
 

@@ -6,7 +6,7 @@ import authAxios from '../utils/authAxios';
 
 
 //`stock/createsku`
-const CreateSKUModel = () => {
+const CreateSKUModel = ({isCompleted}) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [sku, setSku] = useState('');
@@ -28,6 +28,7 @@ const CreateSKUModel = () => {
       if (result) {
         setConfirmLoading(false)
         message.success('New SKU Created !!')
+        isCompleted();
       }
 
     } catch (error) {

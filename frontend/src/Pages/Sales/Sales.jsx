@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react";
 import { Typography, Form, Select, Row, Col, DatePicker, InputNumber, Button, Table, Space, Tag, Input, message, Popconfirm } from "antd";
+import { getAllSku } from '../../utils/Functions';
 
 const Sales = () => {
 
@@ -9,6 +10,18 @@ const Sales = () => {
   const [boxes, setBoxes] = useState(0);
   const [skuNumber, setSku] = useState(0);
   const [data, setData] = useState([]);
+  const [allSkus, setAllSkus] = useState([]);
+
+  useEffect(() => {
+
+    const setAlldata = async () => {
+      const skus = await getAllSku();
+      setAllSkus(skus);
+    }
+
+    setAlldata()
+
+  }, [])
 
 
   //COLUMN NAMES FOR THE TABLE
@@ -86,7 +99,7 @@ const Sales = () => {
     // message.error('Click on No');
   };
 
-  const handleSubmit = ()=>{
+  const handleSubmit = () => {
     message.success('Dispatching Success !');
   }
 
@@ -118,16 +131,10 @@ const Sales = () => {
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'SKU1',
-                  },
-                  {
-                    value: '2',
-                    label: 'SKU2',
-                  }
-                ]}
+                options={allSkus.map((result) => ({
+                  value: result._id,
+                  label: result.sku + ' ' + result.name,
+                }))}
               />
             </Form.Item>
           </Col>
@@ -165,14 +172,14 @@ const Sales = () => {
         </Row>
         <div className="table-container" style={
           {
-            maxHeight:'40vh',
-            overflow:'scroll',
-            scroll:'hidden'
+            maxHeight: '40vh',
+            overflow: 'scroll',
+            scroll: 'hidden'
           }
         }>
           <Table columns={columns} dataSource={data.map((item, index) => ({ ...item, key: index }))} />
         </div>
-        <Button type='primary' style={{background:'green', right:'5%'}} className='position-absolute mt-4' onClick={handleSubmit}>Submit</Button>
+        <Button type='primary' style={{ background: 'green', right: '5%' }} className='position-absolute mt-4' onClick={handleSubmit}>Submit</Button>
       </div>
     </>
   )

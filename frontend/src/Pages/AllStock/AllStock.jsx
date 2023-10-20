@@ -22,8 +22,8 @@ const AllStock = () => {
       const all = await authAxios.get(`/stock`)
       setTableContent(all.data);  
       setVarients(all.data.length);
-      console.log('Table data in Function : ');
-      console.log( all.data);
+     // console.log('Table data in Function : ');
+     // console.log( all.data);
     } catch (error) {
       console.log(error);
     }
@@ -124,11 +124,11 @@ const AllStock = () => {
 
   return (
     <div className="allBookings">
-      <div className='d-flex justify-content-around mb-3'>
-        <StockCountBox count={varients} title={'Varients'} />
-        <StockCountBox count={outOfStock} title={'Out Of Stock'} />
-        <StockCountBox count={expiredItem} title={'Expired Items'} />
-        <StockCountBox count={damagedItem} title={'Damaged Items'} />
+      <div className='d-flex justify-content-around mb-3 flex-wrap'>
+        <StockCountBox count={varients} title={'Varients'} bgColor={'#2980b9'}/>
+        <StockCountBox count={outOfStock} title={'Out Of Stock'} bgColor={'#f39c12'}/>
+        <StockCountBox count={expiredItem} title={'Expired Items'} bgColor={'#e74c3c'}/>
+        <StockCountBox count={damagedItem} title={'Damaged Items'} bgColor={'#8e44ad'}/>
       </div>
       <h3>All Stocks</h3>
       <MDBDataTable scrollX striped bordered data={{ columns: columnData, rows: tableContent }} maxHeight="200px" />

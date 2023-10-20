@@ -18,6 +18,7 @@ import {
 import authAxios from '../../utils/authAxios';
 import CreateSupplier from '../../components/CreateSupplier';
 import axios from 'axios';
+import { getAllSku, getAllSupplier } from '../../utils/Functions';
 
 const { Title } = Typography;
 
@@ -45,33 +46,25 @@ const AddStock = () => {
 
   const [tableContent, setTableContent] = useState([]);
 
-  const getAllSku = async () => {
-    try {
-      const result = await authAxios.get(`/stock/getallsku`);
-      setAllSku(result.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getAllSupplier = async () => {
-    try {
-      const result = await axios.get(`http://localhost:10000/supplier/`);
-      console.log(result);
-      setAllSuppliers(result.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const isCompleted = () => {
 
-  useEffect(() => {
-    // Call the getAllSku function when the component mounts
-    getAllSku();
-    getAllSupplier()
-    console.log(allSku);
-  }, []);
+  }
 
-   // Function to format the date using the Date object
-   const formatDate = (date) => {
+
+  useEffect( () => {
+    const setData = async ()=>{
+      const skus = await getAllSku(); 
+      const sups = await getAllSupplier();
+
+      setAllSku(skus);
+      setAllSuppliers(sups);
+    }
+    setData();
+
+  }, [isCompleted]);
+
+  // Function to format the date using the Date object
+  const formatDate = (date) => {
     if (date instanceof Date) {
       // Format the date as desired (e.g., YYYY-MM-DD)
       const formattedDate = date.toISOString().split('T')[0];
@@ -117,7 +110,7 @@ const AddStock = () => {
     }
   }
 
-  
+
 
   return (
     <>
@@ -140,7 +133,7 @@ const AddStock = () => {
             }
             options={allSuppliers.map((result) => ({
               value: result._id,
-              label: result.supplierId + ' ' + result.supplierName ,
+              label: result.supplierId + ' ' + result.supplierName,
             }))}
           />
         </Form.Item>
@@ -148,7 +141,7 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <Input placeholder='Packing Slip Id' name='packingId' onChange={e=>setPackingId(e.target.value)} value={packingId}/>
+              <Input placeholder='Packing Slip Id' name='packingId' onChange={e => setPackingId(e.target.value)} value={packingId} />
             </Form.Item>
           </Col>
           <Col span={11}>
@@ -157,7 +150,7 @@ const AddStock = () => {
                 name='sku'
                 // Bind the value prop to the supplierId state variable
                 value={sku}
-              // Set the onChange prop to the handleSupplierChange function
+                // Set the onChange prop to the handleSupplierChange function
                 onChange={setSku}
                 showSearch
                 placeholder="SKU Number"
@@ -169,7 +162,7 @@ const AddStock = () => {
                 }
                 options={allSku.map((result) => ({
                   value: result._id,
-                  label: result.sku + ' ' +result.name,
+                  label: result.sku + ' ' + result.name,
                 }))}
               />
             </Form.Item>
@@ -179,12 +172,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber name='noOfBoxes' placeholder='Number Of Boxes' style={{ width: '100%' }} onChange={setNoOfBoxes} value={noOfBoxes}/>
+              <InputNumber name='noOfBoxes' placeholder='Number Of Boxes' style={{ width: '100%' }} onChange={setNoOfBoxes} value={noOfBoxes} />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item >
-              <InputNumber name='noOfUnits' placeholder='Number Of Units' style={{ width: '100%' }} onChange={setNoOfUnits} value={noOfUnits}/>
+              <InputNumber name='noOfUnits' placeholder='Number Of Units' style={{ width: '100%' }} onChange={setNoOfUnits} value={noOfUnits} />
             </Form.Item>
           </Col>
         </Row>
@@ -192,12 +185,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <DatePicker name='MFD' style={{ width: '100%' }} placeholder='Manufactured Date' onChange={setMfd} value={MFD}/>
+              <DatePicker name='MFD' style={{ width: '100%' }} placeholder='Manufactured Date' onChange={setMfd} value={MFD} />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker name='EXP' placeholder='Expiry Date' style={{ width: '100%' }} onChange={setExp} value={EXP}/>
+              <DatePicker name='EXP' placeholder='Expiry Date' style={{ width: '100%' }} onChange={setExp} value={EXP} />
             </Form.Item>
           </Col>
         </Row>
@@ -205,12 +198,12 @@ const AddStock = () => {
         <Row className='justify-content-between'>
           <Col span={12}>
             <Form.Item>
-              <InputNumber name='batchNo' placeholder='Batch Number' style={{ width: '100%' }} onChange={setBatchNo} value={batchNo}/>
+              <InputNumber name='batchNo' placeholder='Batch Number' style={{ width: '100%' }} onChange={setBatchNo} value={batchNo} />
             </Form.Item>
           </Col>
           <Col span={11}>
             <Form.Item>
-              <DatePicker name='purchaseDate' placeholder='Purchase Date' style={{ width: '100%' }} onChange={setPurchaseDate} value={purchaseDate}/>
+              <DatePicker name='purchaseDate' placeholder='Purchase Date' style={{ width: '100%' }} onChange={setPurchaseDate} value={purchaseDate} />
             </Form.Item>
           </Col>
         </Row>
@@ -231,16 +224,16 @@ const AddStock = () => {
         </Form.Item>
         <div className="d-flex w-100 justify-content-between">
           <div className="col-6">
-          <Button type="primary" htmlType="submit" className='mb-0' onClick={handleSubmit}>Add To The Stock </Button>
+            <Button type="primary" htmlType="submit" className='mb-0' onClick={handleSubmit}>Add To The Stock </Button>
           </div>
           <div className="col-4">
-          <CreateSKUModel />
-          <CreateSupplier />
+            <CreateSKUModel isCompleted={isCompleted} />
+            <CreateSupplier isCompleted={isCompleted} />
           </div>
         </div>
       </div>
       <hr className='bg-dark' />
-      <StockTable tableContent={tableContent}/>
+      <StockTable tableContent={tableContent} />
 
     </>
   );
