@@ -146,7 +146,7 @@ const DashboardLayout = () => {
   // }, [])
 
   useEffect(()=>{
-    console.log(user);
+   // console.log(user);
   },[])
 
   const handleTheme = () => {

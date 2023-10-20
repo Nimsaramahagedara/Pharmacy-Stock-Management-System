@@ -9,8 +9,17 @@ const Sales = () => {
   const [units, setUnits] = useState(0);
   const [boxes, setBoxes] = useState(0);
   const [skuNumber, setSku] = useState(0);
+  const [name, setName] = useState('');
   const [data, setData] = useState([]);
   const [allSkus, setAllSkus] = useState([]);
+
+  const handleSkuChange = (value)=>{
+    console.log(value);
+    const id  =  value.split(' ')[0]
+    const name  =  value.split(' ')[1]
+    setSku(id);
+    setName(name)
+  }
 
   useEffect(() => {
 
@@ -69,7 +78,7 @@ const Sales = () => {
   const handleAddDispatch = () => {
     const newItem = {
       sku: skuNumber,
-      name: 'Undefined',
+      name: name,
       qty: units,
       units: boxes
     }
@@ -100,6 +109,7 @@ const Sales = () => {
   };
 
   const handleSubmit = () => {
+    console.log(data);
     message.success('Dispatching Success !');
   }
 
@@ -111,7 +121,7 @@ const Sales = () => {
         <Row className='justify-content-between'>
           <Col span={11}>
             <Form.Item>
-              <DatePicker placeholder='Current Date' style={{ width: '100%' }} />
+              <DatePicker placeholder='Current Date' style={{ width: '100%' }}/>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -123,7 +133,7 @@ const Sales = () => {
           <Col span={6}>
             <Form.Item>
               <Select
-                onChange={(value) => { setSku(value) }}
+                onChange={(value) => { handleSkuChange(value) }}
                 showSearch
                 placeholder="SKU Number"
                 optionFilterProp="children"
@@ -132,7 +142,7 @@ const Sales = () => {
                   (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
                 }
                 options={allSkus.map((result) => ({
-                  value: result._id,
+                  value: result._id + ' ' + result.name,
                   label: result.sku + ' ' + result.name,
                 }))}
               />
